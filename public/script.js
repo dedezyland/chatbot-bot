@@ -38,7 +38,7 @@ form.addEventListener('submit', async function (e) {
 
     // Replace the "Thinking..." message with the actual AI's reply
     clearInterval(thinkingMessageElement.interval);
-    thinkingMessageElement.textContent = botResponseText;
+    thinkingMessageElement.innerHTML = formatBotResponse(botResponseText);
     conversationHistory.push({ role: 'model', text: botResponseText });
 
   } catch (error) {
@@ -48,6 +48,22 @@ form.addEventListener('submit', async function (e) {
     thinkingMessageElement.textContent = `Error: ${error.message || 'Failed to get response from server.'}`;
   }
 });
+
+function formatBotResponse(text) {
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+  return escaped
+    .split(/\r?\n+/)
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .map(line => `<p>${line}</p>`)
+    .join('');
+}
 
 function appendMessage(sender, text) {
   const msg = document.createElement('div');
@@ -63,6 +79,8 @@ function appendMessage(sender, text) {
       dotsSpan.textContent = '.'.repeat(dots);
     }, 500);
     msg.interval = interval;
+  } else if (sender === 'bot') {
+    msg.innerHTML = formatBotResponse(text);
   } else {
     msg.textContent = text;
   }
