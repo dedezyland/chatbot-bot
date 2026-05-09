@@ -10,10 +10,21 @@
   <div class="container">
     <h1>AI Chatbot</h1>
     <div id="chat-box" class="chat-box"></div>
+    <div class="media-buttons">
+      <button type="button" id="upload-document" class="media-btn" title="Upload Dokumen" aria-label="Upload Dokumen">📄</button>
+      <button type="button" id="upload-image" class="media-btn" title="Upload Gambar" aria-label="Upload Gambar">🖼️</button>
+      <button type="button" id="upload-audio" class="media-btn" title="Upload Audio" aria-label="Upload Audio">🎵</button>
+      <button type="button" id="upload-video" class="media-btn" title="Upload Video" aria-label="Upload Video">🎥</button>
+    </div>
     <form id="chat-form">
       <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off" required />
       <button type="submit">Send</button>
     </form>
+    <!-- Hidden file inputs -->
+    <input type="file" id="file-document" accept=".pdf,.doc,.docx,.txt,.xlsx,.pptx" style="display: none;" />
+    <input type="file" id="file-image" accept="image/*" style="display: none;" />
+    <input type="file" id="file-audio" accept="audio/*" style="display: none;" />
+    <input type="file" id="file-video" accept="video/*" style="display: none;" />
   </div>
   <script src="script.js"></script>
 </body>

@@ -4,6 +4,63 @@ const chatBox = document.getElementById('chat-box');
 
 const conversationHistory = [];
 
+// Media upload elements
+const uploadDocumentBtn = document.getElementById('upload-document');
+const uploadImageBtn = document.getElementById('upload-image');
+const uploadAudioBtn = document.getElementById('upload-audio');
+const uploadVideoBtn = document.getElementById('upload-video');
+
+const fileDocumentInput = document.getElementById('file-document');
+const fileImageInput = document.getElementById('file-image');
+const fileAudioInput = document.getElementById('file-audio');
+const fileVideoInput = document.getElementById('file-video');
+
+// Event listeners for media buttons
+uploadDocumentBtn.addEventListener('click', () => fileDocumentInput.click());
+uploadImageBtn.addEventListener('click', () => fileImageInput.click());
+uploadAudioBtn.addEventListener('click', () => fileAudioInput.click());
+uploadVideoBtn.addEventListener('click', () => fileVideoInput.click());
+
+// Handle file selection
+fileDocumentInput.addEventListener('change', (e) => handleFileUpload(e, 'Dokumen'));
+fileImageInput.addEventListener('change', (e) => handleFileUpload(e, 'Gambar'));
+fileAudioInput.addEventListener('change', (e) => handleFileUpload(e, 'Audio'));
+fileVideoInput.addEventListener('change', (e) => handleFileUpload(e, 'Video'));
+
+function handleFileUpload(event, type) {
+  const file = event.target.files[0];
+  if (file) {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.classList.add('media-preview');
+        img.style.maxWidth = '200px';
+        img.style.maxHeight = '200px';
+        appendMessage('user', `📎 ${type}: ${file.name}`, img);
+      };
+      reader.readAsDataURL(file);
+    } else if (file.type.startsWith('video/')) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const video = document.createElement('video');
+        video.src = e.target.result;
+        video.classList.add('media-preview');
+        video.controls = true;
+        video.style.maxWidth = '200px';
+        video.style.maxHeight = '200px';
+        appendMessage('user', `📎 ${type}: ${file.name}`, video);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      appendMessage('user', `📎 ${type}: ${file.name}`);
+    }
+    conversationHistory.push({ role: 'user', text: `Uploaded ${type}: ${file.name}`, file: file });
+    // Here you can add logic to send the file to the backend if needed
+  }
+}
+
 form.addEventListener('submit', async function (e) {
   e.preventDefault();
 
@@ -65,7 +122,7 @@ function formatBotResponse(text) {
     .join('');
 }
 
-function appendMessage(sender, text) {
+function appendMessage(sender, text, mediaElement = null) {
   const msg = document.createElement('div');
   msg.classList.add('message', sender);
   if (sender === 'bot' && text === 'Gemini is thinking...') {
@@ -83,6 +140,9 @@ function appendMessage(sender, text) {
     msg.innerHTML = formatBotResponse(text);
   } else {
     msg.textContent = text;
+    if (mediaElement) {
+      msg.appendChild(mediaElement);
+    }
   }
   chatBox.appendChild(msg);
   chatBox.scrollTop = chatBox.scrollHeight;
